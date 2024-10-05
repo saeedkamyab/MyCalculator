@@ -14,7 +14,8 @@ class Expression(var infixExpression: MutableList<String>) {
             } else if (element == ")") {
                 while (stack.peek() != "(" && stack.isNotEmpty()) {
                     result += "${stack.pop()}"
-                }if (stack.isNotEmpty())
+                }
+                if (stack.isNotEmpty())
                     stack.pop()
             } else {
                 while (stack.isNotEmpty() && precedence(stack.peek()) >= precedence(element)) {
@@ -22,10 +23,10 @@ class Expression(var infixExpression: MutableList<String>) {
                 }
             }
         }
-        while (stack.isNotEmpty()){
-            result+="${stack.pop()}"
+        while (stack.isNotEmpty()) {
+            result += "${stack.pop()}"
         }
-        return  result
+        return result
     }
 
     private fun precedence(operator: String): Int {
@@ -36,7 +37,34 @@ class Expression(var infixExpression: MutableList<String>) {
         }
     }
 
-    fun evaluateExpression(): Double {
+    fun evaluateExpression(postFix: String): Number {
+        val stack = Stack<Double>()
+        var i = 0
+        while (i < postFix.length) {
+            if (postFix[i] == ' ') {
+                i++
+                continue
+            } else if (Character.isDigit(postFix[i])) {
+                var number = ""
+                while (Character.isDigit(postFix[i]) || postFix[i] == '.') {
+                    number += postFix[i]
+                    i++
+                }
+                stack.push(number.toDouble())
+            } else {
+                val x = stack.pop()
+                val y = stack.pop()
+                when (postFix[i]) {
+                    '*' -> stack.push(x * y)
+                    '/' -> stack.push(x / y)
+                    '+' -> stack.push(x + y)
+                    '-' -> stack.push(x - y)
+                }
+            }
+            i++
+        }
+        return if (stack.peek() / stack.peek().toInt() == 1.0) stack.peek()
+            .toInt() else stack.peek()
 
     }
 }
